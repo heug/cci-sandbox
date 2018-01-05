@@ -54,7 +54,7 @@ jobs:
       - run:
           <<: *basic_docker_build
       - run: docker version
-      - run: sleep 60
+      - run: sleep 600
 
   remote_docker:
     <<: *remote_docker_executor
@@ -65,4 +65,4 @@ jobs:
       - run:
           <<: *basic_docker_build
       - run: docker version      
-      - run: sleep 60
+      - run: sleep 600
