@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Create artifact directory
-          command: mkdir artifacts
+          command: mkdir artifacts && mkdir -p /tmp/test-results
       - run:
           name: Generate some artifact
           command: echo "Hello, world!" > artifacts/artifact.txt
@@ -28,7 +28,7 @@ jobs:
       - store_artifacts:
           path: artifacts/
       - store_test_results:
-          path: artifacts/
+          path: /tmp/test-results
 
 workflows:
   version: 2
