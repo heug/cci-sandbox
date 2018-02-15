@@ -1,68 +1,37 @@
 version: 2
-debug: true
+jobs:
+  build:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - checkout
+      - run:
+          name: Create artifact directory
+          command: mkdir artifacts
+      - run:
+          name: Generate some artifact
+          command: echo "Hello, world!" > artifacts/artifact.txt
+      - run:
+          name: Generate test results
+          command: |
+            echo "<testsuites>
+            <testsuite tests="2" failures="1" time="0.005" name="_/tmp/go">
+            <properties>
+            <property name="go.version" value="go1.9.2"/>
+            </properties>
+            <testcase classname="go" name="TestSimple" time="0.000"/>
+            <testcase classname="go" name="TestFail" time="0.000">
+            <failure message="Failed" type="">asdf_test.go:12: Doh</failure>
+            </testcase>
+            </testsuite>
+            </testsuites>" > artifacts/report.xml
+      - store_artifacts:
+          path: artifacts/
+      - store_test_results:
+          path: artifacts/
+
 workflows:
   version: 2
-  machine_jobs:
+  btd:
     jobs:
-      - machine1
-      - remote_docker
-      - remote_docker_reusable
-
-resource-job-default: &resource-job-default
-  docker:
-    - image: circleci/ruby:2.4.1
-  steps:
-    - run: echo $CIRCLE_JOB 
-
-machine: &machine
-  machine: true
-  steps:
-    - run: |
-        echo $SLEEP
-        date
-        sleep $SLEEP
-        date
-        echo 'Done sleeping.'
-
-remote_docker_executor: &remote_docker_executor
-  docker: [{image: 'docker:17.06-git'}]
-
-basic_docker_build: &basic_docker_build
-  name: "Build a really basic docker image"
-  command: |
-    dockerfile=Dockerfile
-    echo "FROM alpine:latest" > $dockerfile
-    echo "RUN echo hello" >> $dockerfile
-    docker build -f $dockerfile --tag throwaway:$CIRCLE_BUILD_NUM .
-    docker run --rm throwaway:$CIRCLE_BUILD_NUM 
-
-jobs:
-
-  machine1:
-    <<: *machine
-    environment:
-      SLEEP: 1
-
-  remote_docker_reusable:
-    <<: *remote_docker_executor
-    steps:
-      - run: which docker
-      - run: docker -v
-      - setup_remote_docker:
-          reusable: true
-          exclusive: false
-      - run:
-          <<: *basic_docker_build
-      - run: docker version
-      - run: sleep 600
-
-  remote_docker:
-    <<: *remote_docker_executor
-    steps:
-      - run: which docker
-      - run: docker -v
-      - setup_remote_docker
-      - run:
-          <<: *basic_docker_build
-      - run: docker version      
-      - run: sleep 600
+      - build

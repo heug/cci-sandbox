@@ -1,0 +1,68 @@
+version: 2
+debug: true
+workflows:
+  version: 2
+  machine_jobs:
+    jobs:
+      - machine1
+      - remote_docker
+      - remote_docker_reusable
+
+resource-job-default: &resource-job-default
+  docker:
+    - image: circleci/ruby:2.4.1
+  steps:
+    - run: echo $CIRCLE_JOB 
+
+machine: &machine
+  machine: true
+  steps:
+    - run: |
+        echo $SLEEP
+        date
+        sleep $SLEEP
+        date
+        echo 'Done sleeping.'
+
+remote_docker_executor: &remote_docker_executor
+  docker: [{image: 'docker:17.06-git'}]
+
+basic_docker_build: &basic_docker_build
+  name: "Build a really basic docker image"
+  command: |
+    dockerfile=Dockerfile
+    echo "FROM alpine:latest" > $dockerfile
+    echo "RUN echo hello" >> $dockerfile
+    docker build -f $dockerfile --tag throwaway:$CIRCLE_BUILD_NUM .
+    docker run --rm throwaway:$CIRCLE_BUILD_NUM 
+
+jobs:
+
+  machine1:
+    <<: *machine
+    environment:
+      SLEEP: 1
+
+  remote_docker_reusable:
+    <<: *remote_docker_executor
+    steps:
+      - run: which docker
+      - run: docker -v
+      - setup_remote_docker:
+          reusable: true
+          exclusive: false
+      - run:
+          <<: *basic_docker_build
+      - run: docker version
+      - run: sleep 600
+
+  remote_docker:
+    <<: *remote_docker_executor
+    steps:
+      - run: which docker
+      - run: docker -v
+      - setup_remote_docker
+      - run:
+          <<: *basic_docker_build
+      - run: docker version      
+      - run: sleep 600
