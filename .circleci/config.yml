@@ -24,7 +24,10 @@ jobs:
             <failure message="Failed" type="">asdf_test.go:12: Doh</failure>
             </testcase>
             </testsuite>
-            </testsuites>' > artifacts/report.xml
+            </testsuites>' > /tmp/test-results/report.xml
+      - run:
+          name: copy test results to artifacts
+          command: cp /tmp/test-results/report.xml artifacts/report.xml
       - store_artifacts:
           path: artifacts/
       - store_test_results:
