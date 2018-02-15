@@ -2,15 +2,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:6
+      - image: circleci/golang:latest
     steps:
-      - checkout
       - run:
-          name: Create artifact directory
-          command: mkdir artifacts && mkdir -p /tmp/test-results
+          name: Create test-results directory
+          command: mkdir -p /tmp/test-results
       - run:
           name: Generate some artifact
-          command: echo "Hello, world!" > artifacts/artifact.txt
+          command: echo "Hello, world!" > /tmp/test-results/artifact.txt
       - run:
           name: Generate test results
           command: |
@@ -25,16 +24,7 @@ jobs:
             </testcase>
             </testsuite>
             </testsuites>' > /tmp/test-results/report.xml
-      - run:
-          name: copy test results to artifacts
-          command: cp /tmp/test-results/report.xml artifacts/report.xml
       - store_artifacts:
-          path: artifacts/
+          path: /tmp/test-results
       - store_test_results:
           path: /tmp/test-results
-
-workflows:
-  version: 2
-  btd:
-    jobs:
-      - build
