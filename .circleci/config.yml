@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:latest
+    steps:
+      - run:
+          command: printenv
+      - run:
+          command: echo "cat dog" > artifact.txt
+      - run:
+          command: echo 'export TESTER=$(grep "cat" artifact.txt)' >> $BASH_ENV
+      - run:
+          command: echo $BASH_ENV
