@@ -14,7 +14,7 @@ jobs:
       - run:
           name: Generate Test XML
           command: |
-            cat "<testsuites> \ 
+            echo "<testsuites> \ 
               <testsuite tests="2" failures="1" time="0.005" name="_/tmp/go"> \
               <properties> \
               <property name="go.version" value="go1.9.2"/> \
