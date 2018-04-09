@@ -11,6 +11,22 @@ jobs:
       - run:
           name: Generate some artifact
           command: echo "Hello, world!" > artifacts/artifact.txt
+      - run:
+          name: Generate Test XML
+          command: |
+            cat "<testsuites>
+            <testsuite tests="2" failures="1" time="0.005" name="_/tmp/go">
+            <properties>
+            <property name="go.version" value="go1.9.2"/>
+            </properties>
+            <testcase classname="go" name="TestSimple" time="0.000"/>
+            <testcase classname="go" name="TestFail" time="0.000">
+            <failure message="Failed" type="">asdf_test.go:12: Doh</failure>
+            </testcase>
+            </testsuite>
+            </testsuites>" >> artifacts/tests.xml
+      - store_test_results:
+          path: artifacts/
       - store_artifacts:
           path: artifacts/
 
