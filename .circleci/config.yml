@@ -2,15 +2,42 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:latest
+      - image: circleci/node:6
     steps:
       - run:
-          command: printenv
+          name: Create artifact directory
+          command: mkdir artifacts
       - run:
-          command: echo "cat dog" > artifact.txt
+          name: Generate some artifact
+          command: echo "Hello, world!" > artifacts/artifact.txt
       - run:
-          command: echo 'export TESTER=$(grep "cat" artifact.txt)' >> $BASH_ENV
-      - run:
-          command: echo $TESTER
-      - run:
-          command: printenv
+          name: Generate Test XML
+          command: |
+            echo '<testsuites> 
+              <testsuite tests="2" failures="1" time="0.005" name="_/tmp/go">
+              <properties>
+              <property name="go.version" value="go1.9.2"/>
+              </properties>
+              <testcase classname="go" name="TestSimple" time="0.000"/>
+              <testcase classname="go" name="TestFail" time="0.000">
+              <failure message="Failed" type="">asdf_test.go:12: Doh</failure>
+              </testcase>
+              </testsuite>
+              </testsuites>' >> artifacts/tests.xml
+      - store_test_results:
+          path: artifacts/
+      - store_artifacts:
+          path: artifacts/
+  ttt:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - run: echo "HELLO"
+workflows:
+  version: 2
+  btd:
+    jobs:
+      - build
+      - ttt:
+          requires:
+              - build
