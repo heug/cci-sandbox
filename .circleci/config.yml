@@ -28,9 +28,16 @@ jobs:
           path: artifacts/
       - store_artifacts:
           path: artifacts/
-
+  ttt:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - run: echo "HELLO"
 workflows:
   version: 2
   btd:
     jobs:
       - build
+      - ttt:
+          requires:
+              - build
