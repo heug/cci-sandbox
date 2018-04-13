@@ -33,6 +33,16 @@ jobs:
       - image: circleci/node:6
     steps:
       - run: echo "HELLO"
+  uuu:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - run: echo "HELLO"
+  vvv:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - run: echo "HELLO"
 workflows:
   version: 2
   btd:
@@ -41,3 +51,10 @@ workflows:
       - ttt:
           requires:
               - build
+      - uuu:
+          requires:
+              - build
+              - ttt
+      - vvv:
+          requires:
+              - uuu
