@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: circleci/node:6
     steps:
+      - run: asljalrkerkjser
       - run:
           name: Create artifact directory
           command: mkdir artifacts
